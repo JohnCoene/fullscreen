@@ -1,0 +1,16 @@
+Package: fullscreen
+Title: Make 'Rmarkdown' and 'Shiny' applications fullscreen
+Version: 0.1.0.9000
+Authors@R: 
+    person(given = "John",
+           family = "Coene",
+           role = c("aut", "cre"),
+           email = "jcoenep@gmail.com")
+Description: Make 'Rmarkdown' and 'Shiny' applications fullscreen.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Imports: 
+    shiny,
+    htmltools
