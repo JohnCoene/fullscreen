@@ -29,13 +29,16 @@ ui <- fluidPage(
 	fsButton("Make fullscreen")
 )
 
-server <- function(){}
+server <- function(...){}
 
 shinyApp(ui, server)
 ```
 
+![](man/figures/fs1.gif)
+
 You can customise the tag used for the button (default `<a>`) with
-the `.tag` argument, e.g.: `.tag = actionButton`.
+the `.tag` argument, e.g.: `.tag = actionButton`. You can also
+create a link (instead of a button) with `fsLink`.
 
 By default the entire page/app is made fullscreen. You can also
 make specific elements fullscreen with the `.target` argument.
@@ -57,6 +60,8 @@ server <- function(input, output, session){
 
 shinyApp(ui, server)
 ```
+
+![](man/figures/fs2.gif)
 
 You can also use the server with the `fs_server` function. 
 This, of course, only works in __Shiny__.

@@ -16,4 +16,20 @@ function supportShiny(){
 	});
 }
 
+function fsTrigger(id, target) {
+	document.getElementById(id).addEventListener('click', function(){
+
+		if(target){
+			let element = document.getElementById(target);
+			if (screenfull.isEnabled) {
+				screenfull.request(element);
+			}
+			return ;
+		}
+		
+		screenfull.request();
+	});
+
+}
+
 document.onload = supportShiny();

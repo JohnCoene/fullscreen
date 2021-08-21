@@ -19,9 +19,9 @@ useFs <- function(){
   )
 }
 
-#' Fullscreen Button
+#' Fullscreen Triggers
 #' 
-#' Create a button that triggers the full screen.
+#' Create a button or a link that triggers the fullscreen.
 #' 
 #' @param ... Arguments to pass to the button `.tag`.
 #' @param id Id of the button.
@@ -30,6 +30,7 @@ useFs <- function(){
 #' if `NULL` makes the entire page full screen.
 #' @param .type Button type, e.g.: `success`.
 #' @param .tag Htmltools or shiny tag to use to create the button.
+#' Default to `<a>`.
 #' 
 #' @examples 
 #' library(shiny)
@@ -44,6 +45,7 @@ useFs <- function(){
 #' if(interactive())
 #'  shinyApp(ui, server)
 #' 
+#' @name fsTrigger
 #' @export 
 fsButton <- function(
   ..., 
@@ -54,7 +56,7 @@ fsButton <- function(
   .tag = htmltools::a
 ){
   # id
-  id <- make_id(id)
+  id <- ensure_id(id)
 
   # class
   cl <- sprintf("btn btn-%s", .type)
@@ -66,19 +68,14 @@ fsButton <- function(
 
   tg <- as.character(substitute(.tag))
 
+  args <- list(class = cl, ...)
   if(any(tg %in% c("actionButton", "actionLink"))) {
-    btn <- .tag(
-      inputId = id,
-      class = cl,
-      ... 
-    )
+    args[["inputId"]] <- id
   } else {
-    btn <- .tag(
-      id = id,
-      class = cl,
-      ... 
-    )
+    args[["id"]] <- id
   }
+
+  btn <- do.call(.tag, args)
 
   htmltools::tagList(
     useFs(),
@@ -87,44 +84,40 @@ fsButton <- function(
   )
 }
 
-
-fsOnLoad <- function(
+#' @rdname fsTrigger
+#' @export 
+fsLink <- function(
   ..., 
-  .target = NULL
+  id = NULL,
+  class = NULL,
+  .target = NULL, 
+  .tag = htmltools::a
 ){
+  # id
+  id <- ensure_id(id)
 
-  script <- make_script_on_load(.target)
-  script <- wrap_script(script)
+  # class
+  cl <- paste0("", class)
 
   # script
-  htmltools::tagList(
-    useFs(),
-    script
-  )
-}
+  script <- make_script(id, .target)
+  script <- wrap_script(script)
 
-make_script_on_load <- function(target){
-  if(is.null(target)){
-    return(
-      "function onLoadFS(e){
-        if (screenfull.isEnabled) {
-          screenfull.request();
-        }       
-      };
-      window.addEventListener('DOMContentLoaded', onLoadFS);
-      "
-    )
+  tg <- as.character(substitute(.tag))
+
+  args <- list(class = cl, ...)
+  if(any(tg %in% c("actionButton", "actionLink"))) {
+    args[["inputId"]] <- id
+  } else {
+    args[["id"]] <- id
   }
 
-  sprintf(
-    "function onLoadFS(e){
-      let element = document.getElementById('%s');
-      if (screenfull.isEnabled) {
-        screenfull.request(element);
-      }       
-    };
-    window.addEventListener('DOMContentLoaded', onLoadFS);",
-    target
+  btn <- do.call(.tag, args)
+
+  htmltools::tagList(
+    useFs(),
+    btn,
+    script
   )
 }
 
@@ -176,36 +169,29 @@ fs_server <- function(
 #' 
 #' @keywords internal
 make_script <- function(id, target){
-  if(is.null(target)){
-    return(
-      sprintf(
-        "document.getElementById('%s').addEventListener('click', function(){
-          if (screenfull.isEnabled) {
-            screenfull.request();
-          }       
-        });",
-        id
-      )
-    )
-  }
+  if(is.null(target))
+    target <- 'null'
+  else 
+    target <- sprintf("'%s'", target)
 
   sprintf(
-    "document.getElementById('%s').addEventListener('click', function(){
-      let element = document.getElementById('%s');
-      if (screenfull.isEnabled) {
-        screenfull.request(element);
-      }       
-    });",
+    "fsTrigger('%s', %s)",
     id,
     target
   )
 }
 
+# Wrap script in tag
 wrap_script <- function(script){
   htmltools::tags$script(script)
 }
 
-make_id <- function(id){
+#' Generate a Random Id
+#' 
+#' @param id Id, if `NULL` one is generated.
+#' 
+#' @keywords internal
+ensure_id <- function(id = NULL){
   if(!is.null(id))
     return(id)
 
