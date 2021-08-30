@@ -80,7 +80,7 @@ ui <- fluidPage(
 
 server <- function(input, output, session){
 	observeEvent(input$fs,{
-		fs_sever()
+		fs_server()
 	})
 }
 
