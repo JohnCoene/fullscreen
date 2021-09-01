@@ -1,6 +1,8 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
+__Archived__ see [shinyfullscreen](https://github.com/etiennebacher/shinyfullscreen)
+
 # fullscreen
 
 Allow making R markdown documents, Shiny apps, or specific
